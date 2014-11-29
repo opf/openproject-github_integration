@@ -32,9 +32,11 @@ describe OpenProject::GithubIntegration::HookHandler do
   describe '#process' do
     let(:handler) { OpenProject::GithubIntegration::HookHandler.new }
     let(:hook) { 'fake hook' }
-    let(:params) { ActionController::Parameters.new({ 'webhook' => {'fake' => 'value'} }) }
-    let(:environment) { { 'HTTP_X_GITHUB_EVENT' => 'pull_request' ,
-                          'HTTP_X_GITHUB_DELIVERY' => 'veryuniqueid' } }
+    let(:params) { ActionController::Parameters.new('webhook' => { 'fake' => 'value' }) }
+    let(:environment) {
+      { 'HTTP_X_GITHUB_EVENT' => 'pull_request',
+        'HTTP_X_GITHUB_DELIVERY' => 'veryuniqueid' }
+    }
     let(:user) do
       user = double(User)
       allow(user).to receive(:id).and_return(12)
@@ -42,8 +44,10 @@ describe OpenProject::GithubIntegration::HookHandler do
     end
 
     context 'with an unsupported event' do
-      let(:environment) { { 'HTTP_X_GITHUB_EVENT' => 'X-unspupported' ,
-                            'HTTP_X_GITHUB_DELIVERY' => 'veryuniqueid2' } }
+      let(:environment) {
+        { 'HTTP_X_GITHUB_EVENT' => 'X-unspupported',
+          'HTTP_X_GITHUB_DELIVERY' => 'veryuniqueid2' }
+      }
 
       it 'should return 404' do
         result = handler.process(hook, environment, params, user)
@@ -66,12 +70,12 @@ describe OpenProject::GithubIntegration::HookHandler do
       end
 
       it 'should send a notification with the correct contents' do
-        expect(OpenProject::Notifications).to receive(:send).with("github.pull_request", {
-          'fake' => 'value',
-          'user_id' => 12,
-          'github_event' => 'pull_request',
-          'github_delivery' => 'veryuniqueid'
-        })
+        expect(OpenProject::Notifications).to receive(:send).with('github.pull_request',
+                                                                  'fake' => 'value',
+                                                                  'user_id' => 12,
+                                                                  'github_event' => 'pull_request',
+                                                                  'github_delivery' => 'veryuniqueid'
+        )
         handler.process(hook, environment, params, user)
       end
 
