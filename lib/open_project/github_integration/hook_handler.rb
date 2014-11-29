@@ -20,7 +20,7 @@ module OpenProject::GithubIntegration
     # A github webhook happened.
     # We need to check validity of the data and send a Notification
     # which we process in our NotificationHandler.
-    def process(hook, environment, params, user)
+    def process(_hook, environment, params, user)
       event_type = environment['HTTP_X_GITHUB_EVENT']
       event_delivery = environment['HTTP_X_GITHUB_DELIVERY']
 
@@ -37,7 +37,7 @@ module OpenProject::GithubIntegration
 
       OpenProject::Notifications.send(event_name(event_type), payload)
 
-      return 200
+      200
     end
 
     private def event_name(github_event_name)

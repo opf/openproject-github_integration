@@ -77,12 +77,14 @@ describe OpenProject::GithubIntegration do
 
     before do
       allow(WorkPackage).to receive(:includes).and_return(WorkPackage)
-      allow(WorkPackage).to receive(:find_by_id) {|id| wps[id]}
+      allow(WorkPackage).to receive(:find_by_id) { |id| wps[id] }
     end
 
     shared_examples_for 'GithubIntegration.find_visible_work_packages' do
-      subject { OpenProject::GithubIntegration::NotificationHandlers.send(
-                  :find_visible_work_packages, ids, user) }
+      subject {
+        OpenProject::GithubIntegration::NotificationHandlers.send(
+                  :find_visible_work_packages, ids, user)
+      }
       it { expect(subject).to eql(expected) }
     end
 
@@ -139,7 +141,7 @@ describe OpenProject::GithubIntegration do
 
   describe '.pull_request' do
     context 'with a synchronize action' do
-      let(:payload) { {'action' => 'synchronize'} }
+      let(:payload) { { 'action' => 'synchronize' } }
 
       before do
         expect(OpenProject::GithubIntegration::NotificationHandlers).not_to receive(

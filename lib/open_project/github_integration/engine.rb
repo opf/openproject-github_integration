@@ -25,7 +25,6 @@ module OpenProject::GithubIntegration
              author_url: 'http://finn.de',
              requires_openproject: '>= 3.1.0pre1'
 
-
     initializer 'github.register_hook' do
       ::OpenProject::Webhooks.register_hook 'github' do |hook, environment, params, user|
         HookHandler.new.process(hook, environment, params, user)
@@ -38,6 +37,5 @@ module OpenProject::GithubIntegration
       ::OpenProject::Notifications.subscribe('github.issue_comment',
                                              &NotificationHandlers.method(:issue_comment))
     end
-
   end
 end

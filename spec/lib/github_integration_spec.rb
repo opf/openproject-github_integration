@@ -21,9 +21,11 @@ describe OpenProject::GithubIntegration do
 
   describe 'with sane set-up' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:role) { FactoryGirl.create(:role,
-                                    permissions: [:add_work_package_notes]) }
-    let(:statuses) { (1..5).map{ |i| FactoryGirl.create(:status)}}
+    let(:role) {
+      FactoryGirl.create(:role,
+                         permissions: [:add_work_package_notes])
+    }
+    let(:statuses) { (1..5).map { |_i| FactoryGirl.create(:status) } }
     let(:priority) { FactoryGirl.create :priority, is_default: true }
     let(:status) { statuses[0] }
     let(:project) do
@@ -40,16 +42,16 @@ describe OpenProject::GithubIntegration do
     end
     let(:wp3) do
       FactoryGirl.create :work_package,
-                             project: project_without_permission
+                         project: project_without_permission
     end
     let(:wp4) do
       FactoryGirl.create :work_package,
-                             project: project_without_permission
+                         project: project_without_permission
     end
     let(:wps) { [wp1, wp2, wp3, wp4] }
 
-    it "should handle the pull_request creation payload" do
-      params = ActionController::Parameters.new({
+    it 'should handle the pull_request creation payload' do
+      params = ActionController::Parameters.new(
         'webhook' => {
           'action' => 'opened',
           'number' => '5',
@@ -73,7 +75,7 @@ describe OpenProject::GithubIntegration do
           },
           'repository' => {}
         }
-      })
+      )
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -91,8 +93,8 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Opened')
     end
 
-    it "should handle the pull_request close payload" do
-      params = ActionController::Parameters.new({
+    it 'should handle the pull_request close payload' do
+      params = ActionController::Parameters.new(
         'webhook' => {
           'action' => 'closed',
           'number' => '5',
@@ -116,7 +118,7 @@ describe OpenProject::GithubIntegration do
           },
           'repository' => {}
         }
-      })
+      )
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -134,8 +136,8 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Closed')
     end
 
-    it "should handle the pull_request merged payload" do
-      params = ActionController::Parameters.new({
+    it 'should handle the pull_request merged payload' do
+      params = ActionController::Parameters.new(
         'webhook' => {
           'action' => 'closed',
           'number' => '5',
@@ -160,7 +162,7 @@ describe OpenProject::GithubIntegration do
           },
           'repository' => {}
         }
-      })
+      )
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -178,8 +180,8 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Merged')
     end
 
-    it "should handle the pull_request comment creation payload" do
-      params = ActionController::Parameters.new({
+    it 'should handle the pull_request comment creation payload' do
+      params = ActionController::Parameters.new(
         'webhook' => {
           'action' => 'created',
           'issue' => {
@@ -207,7 +209,7 @@ describe OpenProject::GithubIntegration do
             'html_url' => 'http://pull.request'
           }
         }
-      })
+      )
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'issue_comment',

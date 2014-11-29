@@ -13,11 +13,9 @@
 #++
 
 module OpenProject::GithubIntegration
-
   ##
   # Handles github-related notifications.
   module NotificationHandlers
-
     ##
     # Handles a pull_request webhook notification.
     # The payload looks similar to this:
@@ -94,7 +92,7 @@ module OpenProject::GithubIntegration
       #  - https://www.openproject.org/subdirectory/work_packages/1234
       wp_regex = /http(?:s?):\/\/#{Regexp.escape(Setting.host_name)}\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
 
-      source.scan(wp_regex).flatten.map {|s| s.to_i }.uniq
+      source.scan(wp_regex).flatten.map(&:to_i).uniq
     end
 
     ##
@@ -123,7 +121,7 @@ module OpenProject::GithubIntegration
         notes_for_issue_comment_payload(payload)
       else
         raise "GitHub event not supported: #{payload['github_event']}" +
-              " (#{payload['github_delivery']})"
+          " (#{payload['github_delivery']})"
       end
     end
 
@@ -142,7 +140,7 @@ module OpenProject::GithubIntegration
       key = 'merged' if key == 'closed' && payload['pull_request']['merged']
 
       raise "Github action #{payload['action']} " +
-            "for event #{payload['github_event']} not supported." unless key
+        "for event #{payload['github_event']} not supported." unless key
 
       I18n.t("github_integration.pull_request_#{key}_comment",
              pr_number: payload['number'],
@@ -157,10 +155,10 @@ module OpenProject::GithubIntegration
     def self.notes_for_issue_comment_payload(payload)
       unless payload['action'] == 'created'
         raise "Github action #{payload['action']} " +
-              "for event #{payload['github_event']} not supported."
+          "for event #{payload['github_event']} not supported."
       end
 
-      I18n.t("github_integration.pull_request_referenced_comment",
+      I18n.t('github_integration.pull_request_referenced_comment',
              pr_number: payload['issue']['number'],
              pr_title: payload['issue']['title'],
              pr_url: payload['comment']['html_url'],
