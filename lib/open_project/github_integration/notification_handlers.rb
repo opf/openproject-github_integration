@@ -74,7 +74,7 @@ module OpenProject::GithubIntegration
       # TODO mergeable
 
       wps.each do |wp|
-        wp.update_by!(user, :notes => notes_for_payload(payload))
+        wp.update_by!(user, notes: notes_for_payload(payload))
       end
     end
 
@@ -145,13 +145,13 @@ module OpenProject::GithubIntegration
             "for event #{payload['github_event']} not supported." unless key
 
       I18n.t("github_integration.pull_request_#{key}_comment",
-             :pr_number => payload['number'],
-             :pr_title => payload['pull_request']['title'],
-             :pr_url => payload['pull_request']['html_url'],
-             :repository => payload['pull_request']['base']['repo']['full_name'],
-             :repository_url => payload['pull_request']['base']['repo']['html_url'],
-             :github_user => payload['sender']['login'],
-             :github_user_url => payload['sender']['html_url'])
+             pr_number: payload['number'],
+             pr_title: payload['pull_request']['title'],
+             pr_url: payload['pull_request']['html_url'],
+             repository: payload['pull_request']['base']['repo']['full_name'],
+             repository_url: payload['pull_request']['base']['repo']['html_url'],
+             github_user: payload['sender']['login'],
+             github_user_url: payload['sender']['html_url'])
     end
 
     def self.notes_for_issue_comment_payload(payload)
@@ -161,13 +161,13 @@ module OpenProject::GithubIntegration
       end
 
       I18n.t("github_integration.pull_request_referenced_comment",
-             :pr_number => payload['issue']['number'],
-             :pr_title => payload['issue']['title'],
-             :pr_url => payload['comment']['html_url'],
-             :repository => payload['repository']['full_name'],
-             :repository_url => payload['repository']['html_url'],
-             :github_user => payload['comment']['user']['login'],
-             :github_user_url => payload['comment']['user']['html_url'])
+             pr_number: payload['issue']['number'],
+             pr_title: payload['issue']['title'],
+             pr_url: payload['comment']['html_url'],
+             repository: payload['repository']['full_name'],
+             repository_url: payload['repository']['html_url'],
+             github_user: payload['comment']['user']['login'],
+             github_user_url: payload['comment']['user']['html_url'])
     end
   end
 end

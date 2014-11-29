@@ -22,8 +22,8 @@ module OpenProject::GithubIntegration
     include OpenProject::Plugins::ActsAsOpEngine
 
     register 'openproject-github_integration',
-             :author_url => 'http://finn.de',
-             :requires_openproject => '>= 3.1.0pre1'
+             author_url: 'http://finn.de',
+             requires_openproject: '>= 3.1.0pre1'
 
 
     initializer 'github.register_hook' do
