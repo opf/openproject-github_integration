@@ -104,7 +104,7 @@ module OpenProject::GithubIntegration
     # Returns:
     #  - Array<WorkPackage>
     def self.find_visible_work_packages(ids, user)
-      ids.collect do |id|
+      ids.map do |id|
         WorkPackage.includes(:project).find_by_id(id)
       end.select do |wp|
         wp.present? && user.allowed_to?(:add_work_package_notes, wp.project)
