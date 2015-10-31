@@ -21,9 +21,11 @@ describe OpenProject::GithubIntegration do
 
   describe 'with sane set-up' do
     let(:user) { FactoryGirl.create(:user) }
-    let(:role) { FactoryGirl.create(:role,
-                                    permissions: [:add_work_package_notes]) }
-    let(:statuses) { (1..5).map{ |i| FactoryGirl.create(:status)}}
+    let(:role) {
+      FactoryGirl.create(:role,
+                         permissions: [:add_work_package_notes])
+    }
+    let(:statuses) { (1..5).map { |_i| FactoryGirl.create(:status) } }
     let(:priority) { FactoryGirl.create :priority, is_default: true }
     let(:status) { statuses[0] }
     let(:project) do
@@ -40,40 +42,40 @@ describe OpenProject::GithubIntegration do
     end
     let(:wp3) do
       FactoryGirl.create :work_package,
-                             project: project_without_permission
+                         project: project_without_permission
     end
     let(:wp4) do
       FactoryGirl.create :work_package,
-                             project: project_without_permission
+                         project: project_without_permission
     end
     let(:wps) { [wp1, wp2, wp3, wp4] }
 
-    it "should handle the pull_request creation payload" do
+    it 'should handle the pull_request creation payload' do
       params = ActionController::Parameters.new({
-        'webhook' => {
-          'action' => 'opened',
-          'number' => '5',
-          'pull_request' => {
-            'title' => 'Bugfixes',
-            'body' => "Fixes http://example.net/wp/#{wp1.id} and " +
-                      "https://example.net/work_packages/#{wp2.id} and " +
-                      "http://example.net/subdir/wp/#{wp3.id} and " +
-                      "https://example.net/subdir/work_packages/#{wp4.id}.",
-            'html_url' => 'http://pull.request',
-            'base' => {
-              'repo' => {
-                'full_name' => 'full/name',
-                'html_url' => 'http://pull.request'
-              }
-            }
-          },
-          'sender' => {
-            'login' => 'github_login',
-            'html_url' => 'http://user.name'
-          },
-          'repository' => {}
-        }
-      })
+                                                  'webhook' => {
+                                                    'action' => 'opened',
+                                                    'number' => '5',
+                                                    'pull_request' => {
+                                                      'title' => 'Bugfixes',
+                                                      'body' => "Fixes http://example.net/wp/#{wp1.id} and " \
+                                                                "https://example.net/work_packages/#{wp2.id} and " \
+                                                                "http://example.net/subdir/wp/#{wp3.id} and " \
+                                                                "https://example.net/subdir/work_packages/#{wp4.id}.",
+                                                      'html_url' => 'http://pull.request',
+                                                      'base' => {
+                                                        'repo' => {
+                                                          'full_name' => 'full/name',
+                                                          'html_url' => 'http://pull.request'
+                                                        }
+                                                      }
+                                                    },
+                                                    'sender' => {
+                                                      'login' => 'github_login',
+                                                      'html_url' => 'http://user.name'
+                                                    },
+                                                    'repository' => {}
+                                                  }
+                                                })
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -91,32 +93,32 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Opened')
     end
 
-    it "should handle the pull_request close payload" do
+    it 'should handle the pull_request close payload' do
       params = ActionController::Parameters.new({
-        'webhook' => {
-          'action' => 'closed',
-          'number' => '5',
-          'pull_request' => {
-            'title' => 'Bugfixes',
-            'body' => "Fixes http://example.net/wp/#{wp1.id} and " +
-                      "https://example.net/work_packages/#{wp2.id} and " +
-                      "http://example.net/subdir/wp/#{wp3.id} and " +
-                      "https://example.net/subdir/work_packages/#{wp4.id}.",
-            'html_url' => 'http://pull.request',
-            'base' => {
-              'repo' => {
-                'full_name' => 'full/name',
-                'html_url' => 'http://pull.request'
-              }
-            }
-          },
-          'sender' => {
-            'login' => 'github_login',
-            'html_url' => 'http://user.name'
-          },
-          'repository' => {}
-        }
-      })
+                                                  'webhook' => {
+                                                    'action' => 'closed',
+                                                    'number' => '5',
+                                                    'pull_request' => {
+                                                      'title' => 'Bugfixes',
+                                                      'body' => "Fixes http://example.net/wp/#{wp1.id} and " \
+                                                                "https://example.net/work_packages/#{wp2.id} and " \
+                                                                "http://example.net/subdir/wp/#{wp3.id} and " \
+                                                                "https://example.net/subdir/work_packages/#{wp4.id}.",
+                                                      'html_url' => 'http://pull.request',
+                                                      'base' => {
+                                                        'repo' => {
+                                                          'full_name' => 'full/name',
+                                                          'html_url' => 'http://pull.request'
+                                                        }
+                                                      }
+                                                    },
+                                                    'sender' => {
+                                                      'login' => 'github_login',
+                                                      'html_url' => 'http://user.name'
+                                                    },
+                                                    'repository' => {}
+                                                  }
+                                                })
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -134,33 +136,33 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Closed')
     end
 
-    it "should handle the pull_request merged payload" do
+    it 'should handle the pull_request merged payload' do
       params = ActionController::Parameters.new({
-        'webhook' => {
-          'action' => 'closed',
-          'number' => '5',
-          'pull_request' => {
-            'title' => 'Bugfixes',
-            'body' => "Fixes http://example.net/wp/#{wp1.id} and " +
-                      "https://example.net/work_packages/#{wp2.id} and " +
-                      "http://example.net/subdir/wp/#{wp3.id} and " +
-                      "https://example.net/subdir/work_packages/#{wp4.id}.",
-            'html_url' => 'http://pull.request',
-            'base' => {
-              'repo' => {
-                'full_name' => 'full/name',
-                'html_url' => 'http://pull.request'
-              }
-            },
-            'merged' => true
-          },
-          'sender' => {
-            'login' => 'github_login',
-            'html_url' => 'http://user.name'
-          },
-          'repository' => {}
-        }
-      })
+                                                  'webhook' => {
+                                                    'action' => 'closed',
+                                                    'number' => '5',
+                                                    'pull_request' => {
+                                                      'title' => 'Bugfixes',
+                                                      'body' => "Fixes http://example.net/wp/#{wp1.id} and " \
+                                                                "https://example.net/work_packages/#{wp2.id} and " \
+                                                                "http://example.net/subdir/wp/#{wp3.id} and " \
+                                                                "https://example.net/subdir/work_packages/#{wp4.id}.",
+                                                      'html_url' => 'http://pull.request',
+                                                      'base' => {
+                                                        'repo' => {
+                                                          'full_name' => 'full/name',
+                                                          'html_url' => 'http://pull.request'
+                                                        }
+                                                      },
+                                                      'merged' => true
+                                                    },
+                                                    'sender' => {
+                                                      'login' => 'github_login',
+                                                      'html_url' => 'http://user.name'
+                                                    },
+                                                    'repository' => {}
+                                                  }
+                                                })
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'pull_request',
@@ -178,36 +180,36 @@ describe OpenProject::GithubIntegration do
       expect(wp1.journals.last.notes).to include('PR Merged')
     end
 
-    it "should handle the pull_request comment creation payload" do
+    it 'should handle the pull_request comment creation payload' do
       params = ActionController::Parameters.new({
-        'webhook' => {
-          'action' => 'created',
-          'issue' => {
-            'title' => 'Bugfixes',
-            'number' => '5',
-            'pull_request' => {
-              'html_url' => 'http://pull.request'
-            }
-          },
-          'comment' => {
-            'body' => "Fixes http://example.net/wp/#{wp1.id} and " +
-                      "https://example.net/work_packages/#{wp2.id} and " +
-                      "http://example.net/subdir/wp/#{wp3.id} and " +
-                      "https://example.net/subdir/work_packages/#{wp4.id}.",
-            'html_url' => 'http://comment.url',
-            'user' => {
-              'login' => 'github_login',
-              'html_url' => 'http://user.name'
-            }
-          },
-          'sender' => {
-          },
-          'repository' => {
-            'full_name' => 'full/name',
-            'html_url' => 'http://pull.request'
-          }
-        }
-      })
+                                                  'webhook' => {
+                                                    'action' => 'created',
+                                                    'issue' => {
+                                                      'title' => 'Bugfixes',
+                                                      'number' => '5',
+                                                      'pull_request' => {
+                                                        'html_url' => 'http://pull.request'
+                                                      }
+                                                    },
+                                                    'comment' => {
+                                                      'body' => "Fixes http://example.net/wp/#{wp1.id} and " \
+                                                                "https://example.net/work_packages/#{wp2.id} and " \
+                                                                "http://example.net/subdir/wp/#{wp3.id} and " \
+                                                                "https://example.net/subdir/work_packages/#{wp4.id}.",
+                                                      'html_url' => 'http://comment.url',
+                                                      'user' => {
+                                                        'login' => 'github_login',
+                                                        'html_url' => 'http://user.name'
+                                                      }
+                                                    },
+                                                    'sender' => {
+                                                    },
+                                                    'repository' => {
+                                                      'full_name' => 'full/name',
+                                                      'html_url' => 'http://pull.request'
+                                                    }
+                                                  }
+                                                })
 
       environment = {
         'HTTP_X_GITHUB_EVENT' => 'issue_comment',
