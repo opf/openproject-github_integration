@@ -13,11 +13,9 @@
 #++
 
 module OpenProject::GithubIntegration
-
   ##
   # Handles github-related notifications.
   module NotificationHandlers
-
     ##
     # Handles a pull_request webhook notification.
     # The payload looks similar to this:
@@ -37,7 +35,7 @@ module OpenProject::GithubIntegration
     def self.pull_request(payload)
       # Don't add comments on new pushes to the pull request => ignore synchronize.
       # Don't add comments about assignments and labels either.
-      ignored_actions = %w[synchronize assigned unassigned labeled unlabeled]
+      ignored_actions = %w(synchronize assigned unassigned labeled unlabeled)
       return if ignored_actions.include? payload['action']
       comment_on_referenced_work_packages payload['pull_request']['body'], payload
     end
@@ -72,11 +70,11 @@ module OpenProject::GithubIntegration
       wp_ids = extract_work_package_ids(text)
       wps = find_visible_work_packages(wp_ids, user)
 
-      # FIXME check user is allowed to update work packages
+      # FIXME: check user is allowed to update work packages
       # TODO mergeable
 
       wps.each do |wp|
-        wp.update_by!(user, :notes => notes_for_payload(payload))
+        wp.update_by!(user, notes: notes_for_payload(payload))
       end
     end
 
@@ -96,7 +94,7 @@ module OpenProject::GithubIntegration
       #  - https://www.openproject.org/subdirectory/work_packages/1234
       wp_regex = /http(?:s?):\/\/#{Regexp.escape(Setting.host_name)}\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
 
-      source.scan(wp_regex).flatten.map {|s| s.to_i }.uniq
+      source.scan(wp_regex).flatten.map(&:to_i).uniq
     end
 
     ##
@@ -124,7 +122,7 @@ module OpenProject::GithubIntegration
       when 'issue_comment'
         notes_for_issue_comment_payload(payload)
       else
-        raise "GitHub event not supported: #{payload['github_event']}" +
+        fail "GitHub event not supported: #{payload['github_event']}" \
               " (#{payload['github_delivery']})"
       end
     end
@@ -143,33 +141,33 @@ module OpenProject::GithubIntegration
       # deserves a different label :)
       key = 'merged' if key == 'closed' && payload['pull_request']['merged']
 
-      raise "Github action #{payload['action']} " +
+      fail "Github action #{payload['action']} " \
             "for event #{payload['github_event']} not supported." unless key
 
       I18n.t("github_integration.pull_request_#{key}_comment",
-             :pr_number => payload['number'],
-             :pr_title => payload['pull_request']['title'],
-             :pr_url => payload['pull_request']['html_url'],
-             :repository => payload['pull_request']['base']['repo']['full_name'],
-             :repository_url => payload['pull_request']['base']['repo']['html_url'],
-             :github_user => payload['sender']['login'],
-             :github_user_url => payload['sender']['html_url'])
+             pr_number: payload['number'],
+             pr_title: payload['pull_request']['title'],
+             pr_url: payload['pull_request']['html_url'],
+             repository: payload['pull_request']['base']['repo']['full_name'],
+             repository_url: payload['pull_request']['base']['repo']['html_url'],
+             github_user: payload['sender']['login'],
+             github_user_url: payload['sender']['html_url'])
     end
 
     def self.notes_for_issue_comment_payload(payload)
       unless payload['action'] == 'created'
-        raise "Github action #{payload['action']} " +
+        fail "Github action #{payload['action']} " \
               "for event #{payload['github_event']} not supported."
       end
 
-      I18n.t("github_integration.pull_request_referenced_comment",
-             :pr_number => payload['issue']['number'],
-             :pr_title => payload['issue']['title'],
-             :pr_url => payload['comment']['html_url'],
-             :repository => payload['repository']['full_name'],
-             :repository_url => payload['repository']['html_url'],
-             :github_user => payload['comment']['user']['login'],
-             :github_user_url => payload['comment']['user']['html_url'])
+      I18n.t('github_integration.pull_request_referenced_comment',
+             pr_number: payload['issue']['number'],
+             pr_title: payload['issue']['title'],
+             pr_url: payload['comment']['html_url'],
+             repository: payload['repository']['full_name'],
+             repository_url: payload['repository']['html_url'],
+             github_user: payload['comment']['user']['login'],
+             github_user_url: payload['comment']['user']['html_url'])
     end
   end
 end

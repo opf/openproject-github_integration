@@ -22,35 +22,35 @@ describe OpenProject::GithubIntegration do
   describe '.extract_work_package_ids' do
     it 'should return an empty array for an empty source' do
       result = OpenProject::GithubIntegration::NotificationHandlers.send(
-                :extract_work_package_ids, '')
+        :extract_work_package_ids, '')
       expect(result).to eql([])
     end
 
     it 'should find a plain work package url' do
       source = 'Blabla\nhttps://example.net/work_packages/234\n'
       result = OpenProject::GithubIntegration::NotificationHandlers.send(
-                :extract_work_package_ids, source)
+        :extract_work_package_ids, source)
       expect(result).to eql([234])
     end
 
     it 'should find a work package url in markdown link syntax' do
       source = 'Blabla\n[WP 234](https://example.net/work_packages/234)\n'
       result = OpenProject::GithubIntegration::NotificationHandlers.send(
-                :extract_work_package_ids, source)
+        :extract_work_package_ids, source)
       expect(result).to eql([234])
     end
 
     it 'should find multiple work package urls' do
       source = "I reference https://example.net/work_packages/434\n and Blabla\n[WP 234](https://example.net/wp/234)\n"
       result = OpenProject::GithubIntegration::NotificationHandlers.send(
-                :extract_work_package_ids, source)
+        :extract_work_package_ids, source)
       expect(result).to eql([434, 234])
     end
 
     it 'should find multiple occurences of a work package only once' do
       source = "I reference https://example.net/work_packages/434\n and Blabla\n[WP 234](https://example.net/work_packages/434)\n"
       result = OpenProject::GithubIntegration::NotificationHandlers.send(
-                :extract_work_package_ids, source)
+        :extract_work_package_ids, source)
       expect(result).to eql([434])
     end
   end
@@ -77,18 +77,20 @@ describe OpenProject::GithubIntegration do
 
     before do
       allow(WorkPackage).to receive(:includes).and_return(WorkPackage)
-      allow(WorkPackage).to receive(:find_by_id) {|id| wps[id]}
+      allow(WorkPackage).to receive(:find_by_id) { |id| wps[id] }
     end
 
     shared_examples_for 'GithubIntegration.find_visible_work_packages' do
-      subject { OpenProject::GithubIntegration::NotificationHandlers.send(
-                  :find_visible_work_packages, ids, user) }
+      subject {
+        OpenProject::GithubIntegration::NotificationHandlers.send(
+          :find_visible_work_packages, ids, user)
+      }
       it { expect(subject).to eql(expected) }
     end
 
     describe 'should find an existing work package' do
       let(:wps) { [visible_wp] }
-      let(:ids)  { [0] }
+      let(:ids) { [0] }
       let(:expected) { wps }
 
       it_behaves_like 'GithubIntegration.find_visible_work_packages'
@@ -96,7 +98,7 @@ describe OpenProject::GithubIntegration do
 
     describe 'should not find a non-existing work package' do
       let(:wps) { [invisible_wp] }
-      let(:ids)  { [0] }
+      let(:ids) { [0] }
       let(:expected) { [] }
 
       it_behaves_like 'GithubIntegration.find_visible_work_packages'
@@ -104,7 +106,7 @@ describe OpenProject::GithubIntegration do
 
     describe 'should find multiple existing work packages' do
       let(:wps) { [visible_wp, visible_wp] }
-      let(:ids)  { [0, 1] }
+      let(:ids) { [0, 1] }
       let(:expected) { wps }
 
       it_behaves_like 'GithubIntegration.find_visible_work_packages'
@@ -112,7 +114,7 @@ describe OpenProject::GithubIntegration do
 
     describe 'should not find work package which the user shall not see' do
       let(:wps) { [visible_wp, invisible_wp, visible_wp, invisible_wp] }
-      let(:ids)  { [0, 1, 2, 3] }
+      let(:ids) { [0, 1, 2, 3] }
       let(:expected) { [visible_wp, visible_wp] }
 
       it_behaves_like 'GithubIntegration.find_visible_work_packages'
@@ -139,7 +141,7 @@ describe OpenProject::GithubIntegration do
 
   describe '.pull_request' do
     context 'with a synchronize action' do
-      let(:payload) { {'action' => 'synchronize'} }
+      let(:payload) { { 'action' => 'synchronize' } }
 
       before do
         expect(OpenProject::GithubIntegration::NotificationHandlers).not_to receive(
