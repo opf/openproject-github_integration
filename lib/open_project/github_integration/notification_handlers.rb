@@ -94,7 +94,7 @@ module OpenProject::GithubIntegration
       #  - https://www.openproject.org/wp/1234
       #  - http://www.openproject.org/work_packages/1234
       #  - https://www.openproject.org/subdirectory/work_packages/1234
-      wp_regex = /http(?:s?):\/\/(.+)\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
+      wp_regex = /http(?:s?):\/\/(?:.+)\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
 
       source.scan(wp_regex).flatten.map {|s| s.to_i }.uniq
     end
